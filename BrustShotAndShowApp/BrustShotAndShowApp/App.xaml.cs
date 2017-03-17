@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BrustShotAndShowApp.ViewModels;
+using BrustShotAndShowApp.Views;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,13 +9,19 @@ using Xamarin.Forms;
 
 namespace BrustShotAndShowApp
 {
+    public static class GlobalViewModel
+    {
+        private static PhotosViewModel photosViewModel;
+        public static PhotosViewModel PhotosViewModel => photosViewModel ?? (photosViewModel = new PhotosViewModel());
+    }
+
     public partial class App : Application
     {
         public App()
         {
             InitializeComponent();
 
-            MainPage = new BrustShotAndShowApp.MainPage();
+            MainPage = new NavigationPage(new MainPage());
         }
 
         protected override void OnStart()

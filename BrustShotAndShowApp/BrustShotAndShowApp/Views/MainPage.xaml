@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:BrustShotAndShowApp"
+             BindingContext="{x:Static local:GlobalViewModel.PhotosViewModel}"
+             x:Class="BrustShotAndShowApp.Views.MainPage">
+
+    <ContentPage.Content>
+        <RelativeLayout>
+            <Image x:Name="image1"  RelativeLayout.WidthConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Width}"
+                RelativeLayout.HeightConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Height,
+                  Factor=0.8}"/>
+            <Button x:Name="takePhotoButton" Text="Take Photos"
+                            RelativeLayout.XConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Width,
+                             Factor=0.20}"
+        RelativeLayout.YConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Height,
+                             Factor=1,
+                             Constant=-45}">
+
+            </Button>
+            <Label x:Name="NumberLabel" Text="{Binding Index}"
+                            RelativeLayout.XConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Width,
+                             Factor=0.80}"
+        RelativeLayout.YConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Height,
+                             Factor=1,
+                             Constant=-45}">
+
+            </Label>
+
+        </RelativeLayout>
+    </ContentPage.Content>
+</ContentPage>
