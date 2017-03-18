@@ -16,7 +16,10 @@ using Android.Views;
 using Xamarin.Forms.Platform.Android;
 using System.Threading;
 using Xamarin.Forms;
+using BrustShotAndShowApp.CustomRenderPage;
+using BrustShotAndShowApp.Droid;
 
+[assembly: ExportRenderer(typeof(CameraPage), typeof(CameraPageRenderer))]
 namespace BrustShotAndShowApp.Droid
 {
     public class CameraPageRenderer : PageRenderer, TextureView.ISurfaceTextureListener
