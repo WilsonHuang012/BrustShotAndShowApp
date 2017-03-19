@@ -227,21 +227,21 @@ namespace BrustShotAndShowApp.Droid
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
 
-                    //GlobalViewModel.PhotosViewModel.ImageList.Add(
-                    //    StreamImageSource.FromStream(() =>
-                    //   fileStream
+                    GlobalViewModel.PhotosViewModel.ImageList.Add(
+                        StreamImageSource.FromStream(() =>
+                       fileStream
 
-                    //    ));
+                        ));
 
 
-                    fileStream.Close();
-                    image.Recycle();
+                    //fileStream.Close();
+                    //image.Recycle();
 
-                    var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
-                    var file = new Java.IO.File(filePath);
-                    var uri = Android.Net.Uri.FromFile(file);
-                    intent.SetData(uri);
-                    Forms.Context.SendBroadcast(intent);
+                    //var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
+                    //var file = new Java.IO.File(filePath);
+                    //var uri = Android.Net.Uri.FromFile(file);
+                    //intent.SetData(uri);
+                    //Forms.Context.SendBroadcast(intent);
                 }
                 catch (Exception ex)
                 {

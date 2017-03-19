@@ -32,8 +32,9 @@ namespace BrustShotAndShowApp.Views
                 case MotionSensorType.Accelerometer:
                     num = ((MotionVector)e.Value).X;
 
-                    if (Device.OS == TargetPlatform.iOS)
-                    {
+                    //if (Device.OS == TargetPlatform.iOS)
+                    //{
+
                         GlobalViewModel.PhotosViewModel.Number = Math.Round(num, 2);
                         GlobalViewModel.PhotosViewModel.Index = GetIndex(GlobalViewModel.PhotosViewModel.Number);
                         if (GlobalViewModel.PhotosViewModel.ImageList.Count > 0)
@@ -64,11 +65,11 @@ namespace BrustShotAndShowApp.Views
                             }
 
                         }
-                    }
-                    else if (Device.OS == TargetPlatform.Android)
-                    {
+                    //}
+                    //else if (Device.OS == TargetPlatform.Android)
+                    //{
 
-                    }
+                    //}
 
                     break;
             }
