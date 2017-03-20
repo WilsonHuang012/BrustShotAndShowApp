@@ -42,6 +42,7 @@
       <DependentUpon>CameraPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomRenderPage\CameraPageCS.cs" />
+    <Compile Include="Interfaces\IGetFile.cs" />
     <Compile Include="ViewModels\PhotosViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

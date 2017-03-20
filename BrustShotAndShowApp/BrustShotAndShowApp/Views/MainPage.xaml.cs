@@ -1,4 +1,5 @@
 ﻿using BrustShotAndShowApp.CustomRenderPage;
+using BrustShotAndShowApp.Interfaces;
 using DeviceMotion.Plugin;
 using DeviceMotion.Plugin.Abstractions;
 using System;
@@ -13,7 +14,7 @@ namespace BrustShotAndShowApp.Views
     public partial class MainPage : ContentPage
     {
         private double num = 0.0f;
-        private int moveindex = 20;
+        private int moveindex = 30;
         private string androidPath = string.Empty;
 
         public MainPage()
@@ -32,8 +33,8 @@ namespace BrustShotAndShowApp.Views
                 case MotionSensorType.Accelerometer:
                     num = ((MotionVector)e.Value).X;
 
-                    //if (Device.OS == TargetPlatform.iOS)
-                    //{
+                    if (Device.OS == TargetPlatform.iOS)
+                    {
 
                         GlobalViewModel.PhotosViewModel.Number = Math.Round(num, 2);
                         GlobalViewModel.PhotosViewModel.Index = GetIndex(GlobalViewModel.PhotosViewModel.Number);
@@ -61,17 +62,37 @@ namespace BrustShotAndShowApp.Views
                             }
                             else
                             {
-
+                                double number = Math.Round(num, 2);
+                                int index = GetIndex(number);
+                                image1.Source = DependencyService.Get<IGetFile>().GetFile(Convert.ToString(index));
                             }
 
                         }
-                    //}
-                    //else if (Device.OS == TargetPlatform.Android)
-                    //{
-
-                    //}
+                    }
+                    else if (Device.OS == TargetPlatform.Android)
+                    {
+                        double number = Math.Round(num, 2);
+                        int index = GetAndroidIndex(number);
+                        image1.Source = DependencyService.Get<IGetFile>().GetFile(Convert.ToString(index));
+                    }
 
                     break;
+            }
+        }
+
+        private int GetAndroidIndex(double number)
+        {
+            if (number == -0.40f)
+            {
+                return 0;
+            }
+            else if (number == 0.40f)
+            {
+                return moveindex - 1;
+            }
+            else
+            {
+                return Convert.ToInt32((number * 50) + 20);
             }
         }
 
