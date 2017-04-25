@@ -6,12 +6,24 @@
              x:Class="BrustShotAndShowApp.Views.MainPage">
 
     <ContentPage.Content>
-        <RelativeLayout>
+        <RelativeLayout HorizontalOptions="FillAndExpand">
             <Image x:Name="image1"  RelativeLayout.WidthConstraint=
                   "{ConstraintExpression Type=RelativeToParent, Property=Width}"
                 RelativeLayout.HeightConstraint=
                   "{ConstraintExpression Type=RelativeToParent, Property=Height,
                   Factor=0.8}"/>
+            <Slider x:Name="PhotoSlider" RelativeLayout.XConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Width,
+                             Factor=0.20}"
+                     RelativeLayout.WidthConstraint=
+                  "{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=0.80}"
+        RelativeLayout.YConstraint =
+      "{ConstraintExpression Type=RelativeToParent,
+                             Property=Height,
+                             Factor=1,
+                             Constant=-75}" Minimum="0" Value="0">
+            </Slider>
             <Button x:Name="takePhotoButton" Text="Take Photos"
                             RelativeLayout.XConstraint =
       "{ConstraintExpression Type=RelativeToParent,
@@ -24,7 +36,7 @@
                              Constant=-45}">
 
             </Button>
-            <Label x:Name="NumberLabel" Text="{Binding Index}"
+            <Label x:Name="NumberLabel" Text="{Binding Source={x:Reference PhotoSlider}, Path=Value}"
                             RelativeLayout.XConstraint =
       "{ConstraintExpression Type=RelativeToParent,
                              Property=Width,

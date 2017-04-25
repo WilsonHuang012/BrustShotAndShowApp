@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,32 +9,21 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using BrustShotAndShowApp.Droid.DependencyServices;
 using BrustShotAndShowApp.Interfaces;
-using BrustShotAndShowApp.Droid;
-using Java.IO;
+using System.IO;
 
-[assembly: Xamarin.Forms.Dependency(typeof(GetFileImplementation))]
-namespace BrustShotAndShowApp.Droid
+[assembly: Xamarin.Forms.Dependency(typeof(GetFileService))]
+namespace BrustShotAndShowApp.Droid.DependencyServices
 {
-    public class GetFileImplementation : IGetFile
+    public class GetFileService : IGetFile
     {
-        public GetFileImplementation() { }
         public string GetFile(string fileName)
         {
             var absolutePath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDcim).AbsolutePath;
-            var folderPath = absolutePath + "/Camera";
+            string folderPath = absolutePath + "/Camara";
             var filePath = System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", fileName));
-            File file = new File(filePath);
-            if (file.Exists())
-            {
-                return file.Path;
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return File.Exists(filePath) ? filePath : string.Empty;
         }
-
-      
     }
 }

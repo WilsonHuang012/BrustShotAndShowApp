@@ -1,6 +1,6 @@
 ﻿using AVFoundation;
-using BrustShotAndShowApp.CustomRenderPage;
 using BrustShotAndShowApp.iOS;
+using BrustShotAndShowApp.Renders;
 using CoreGraphics;
 using Foundation;
 using System;

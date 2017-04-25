@@ -1,4 +1,4 @@
-﻿using BrustShotAndShowApp.CustomRenderPage;
+﻿using BrustShotAndShowApp.Renders;
 using BrustShotAndShowApp.Interfaces;
 using DeviceMotion.Plugin;
 using DeviceMotion.Plugin.Abstractions;
@@ -8,141 +8,86 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace BrustShotAndShowApp.Views
 {
+    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : ContentPage
     {
-        private double num = 0.0f;
-        private int moveindex = 30;
-        private string androidPath = string.Empty;
+        private double StepValue;
 
         public MainPage()
         {
             InitializeComponent();
-
-            takePhotoButton.Clicked += TakePhotoButton_Clicked;
-
-            CrossDeviceMotion.Current.SensorValueChanged += Current_SensorValueChanged;
-        }
-
-        private void Current_SensorValueChanged(object sender, SensorValueChangedEventArgs e)
-        {
-            switch (e.SensorType)
+            switch (Device.RuntimePlatform)
             {
-                case MotionSensorType.Accelerometer:
-                    num = ((MotionVector)e.Value).X;
-
-                    if (Device.OS == TargetPlatform.iOS)
-                    {
-
-                        GlobalViewModel.PhotosViewModel.Number = Math.Round(num, 2);
-                        GlobalViewModel.PhotosViewModel.Index = GetIndex(GlobalViewModel.PhotosViewModel.Number);
-                        if (GlobalViewModel.PhotosViewModel.ImageList.Count > 0)
-                        {
-                            if (num < 0)
-                            {
-                                if (moveindex > 0)
-                                {
-
-                                    image1.Source = GlobalViewModel.PhotosViewModel.ImageList[moveindex];
-                                    moveindex = moveindex - 1;
-                                }
-
-
-                            }
-                            else if (num > 0)
-                            {
-                                if (moveindex < GlobalViewModel.PhotosViewModel.ImageList.Count - 1)
-                                {
-                                    image1.Source = GlobalViewModel.PhotosViewModel.ImageList[moveindex];
-                                    moveindex = moveindex + 1;
-                                }
-
-                            }
-                            else
-                            {
-                                double number = Math.Round(num, 2);
-                                int index = GetIndex(number);
-                                image1.Source = DependencyService.Get<IGetFile>().GetFile(Convert.ToString(index));
-                            }
-
-                        }
-                    }
-                    else if (Device.OS == TargetPlatform.Android)
-                    {
-                        double number = Math.Round(num, 2);
-                        int index = GetAndroidIndex(number);
-                        image1.Source = DependencyService.Get<IGetFile>().GetFile(Convert.ToString(index));
-                    }
-
+                case Device.iOS:
+                    PhotoSlider.Maximum = 29;
+                    break;
+                case Device.Android:
+                    PhotoSlider.Maximum = 1;
                     break;
             }
+
+            takePhotoButton.Clicked += TakePhotoButton_Clicked;
+            PhotoSlider.ValueChanged += PhotoSlider_ValueChanged;
+            StepValue = 1.0;
         }
 
-        private int GetAndroidIndex(double number)
+        private void PhotoSlider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            if (number == -0.40f)
+            var newStep = Math.Round(e.NewValue / StepValue);
+            PhotoSlider.Value = newStep * StepValue;
+            if (Device.RuntimePlatform == Device.iOS)
             {
-                return 0;
+                if (GlobalViewModel.PhotosViewModel.ImageList.Count > 0)
+                {
+                    int index = Convert.ToInt32(PhotoSlider.Value);
+                    if (index > -1)
+                    {
+                        image1.Source = GlobalViewModel.PhotosViewModel.ImageList[index];
+                    }
+                }
             }
-            else if (number == 0.40f)
+            else if (Device.RuntimePlatform == Device.Android)
             {
-                return moveindex - 1;
+                int index = Convert.ToInt32(PhotoSlider.Value);
+                if (index > -1)
+                {
+                    image1.Source = ImageSource.FromFile(DependencyService.Get<IGetFile>().GetFile(index.ToString()));
+                }
             }
-            else
-            {
-                return Convert.ToInt32((number * 50) + 20);
-            }
-        }
-
-        /// <summary>
-        /// y = 50x + 20
-        /// </summary>
-        /// <param name="number">x</param>
-        /// <returns>y</returns>
-        private int GetIndex(double number)
-        {
-            if (number == -0.40f)
-            {
-                return 0;
-            }
-            else if (number == 0.40f)
-            {
-                return GlobalViewModel.PhotosViewModel.ImageList.Count - 1;
-            }
-            else
-            {
-                return Convert.ToInt32((number * 50) + 20);
-            }
-
         }
 
         async void TakePhotoButton_Clicked(object sender, EventArgs e)
         {
-            CrossDeviceMotion.Current.Stop(MotionSensorType.Accelerometer);
+            MessagingCenter.Subscribe<MainPage>(this, "TakePhoto", async (s) => {
+                await Navigation.PopAsync(true);
+            });
+
             await Navigation.PushAsync(new CameraPage());
+        }
+
+        ~MainPage()
+        {
+            MessagingCenter.Unsubscribe<MainPage>(this, "TakePhoto");
         }
 
         protected override void OnAppearing()
         {
-            CrossDeviceMotion.Current.Start(MotionSensorType.Accelerometer);
+            if (Device.RuntimePlatform == Device.iOS)
+            {
+                if (GlobalViewModel.PhotosViewModel.ImageList.Count > 0)
+                {
+                    image1.Source = GlobalViewModel.PhotosViewModel.ImageList[0];
+                }
+            }
+            else if (Device.RuntimePlatform == Device.Android)
+            {
+                image1.Source = ImageSource.FromFile(DependencyService.Get<IGetFile>().GetFile("0"));
+            }
         }
 
-        private ImageSource GetStreamByIndex(int index)
-        {
-            if (GlobalViewModel.PhotosViewModel.ImageList.Count > 0 && index >= GlobalViewModel.PhotosViewModel.ImageList.Count)
-            {
-                return GlobalViewModel.PhotosViewModel.ImageList[GlobalViewModel.PhotosViewModel.ImageList.Count - 1];
-            }
-            else if (GlobalViewModel.PhotosViewModel.ImageList.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return GlobalViewModel.PhotosViewModel.ImageList[index];
-            }
-        }
     }
 }

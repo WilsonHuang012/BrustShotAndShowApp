@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace BrustShotAndShowApp.CustomRenderPage
+namespace BrustShotAndShowApp.Renders
 {
     public class CameraPageCS : ContentPage
     {

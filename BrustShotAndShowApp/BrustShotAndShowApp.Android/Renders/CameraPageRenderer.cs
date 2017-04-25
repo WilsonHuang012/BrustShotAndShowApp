@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,18 +9,18 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Hardware;
+using Xamarin.Forms;
+using BrustShotAndShowApp.Renders;
+using BrustShotAndShowApp.Droid.Renders;
+using System.Threading;
 using System.IO;
 using Android.Graphics;
-using Android.Views;
+using Android.Hardware;
 using Xamarin.Forms.Platform.Android;
-using System.Threading;
-using Xamarin.Forms;
-using BrustShotAndShowApp.CustomRenderPage;
-using BrustShotAndShowApp.Droid;
+using BrustShotAndShowApp.Views;
 
 [assembly: ExportRenderer(typeof(CameraPage), typeof(CameraPageRenderer))]
-namespace BrustShotAndShowApp.Droid
+namespace BrustShotAndShowApp.Droid.Renders
 {
     public class CameraPageRenderer : PageRenderer, TextureView.ISurfaceTextureListener
     {
@@ -34,7 +34,7 @@ namespace BrustShotAndShowApp.Droid
         CameraFacing cameraType;
         TextureView textureView;
         SurfaceTexture surfaceTexture;
-
+        App app = (App)Xamarin.Forms.Application.Current;
         bool flashOn;
         byte[] imageBytes;
 
@@ -114,12 +114,12 @@ namespace BrustShotAndShowApp.Droid
             PrepareAndStartCamera();
         }
 
-
-
         public bool OnSurfaceTextureDestroyed(SurfaceTexture surface)
         {
             camera.StopPreview();
+            camera.SetPreviewCallback(null);
             camera.Release();
+
             return true;
         }
 
@@ -208,13 +208,14 @@ namespace BrustShotAndShowApp.Droid
         async void TakePhotoButtonTapped(object sender, EventArgs e)
         {
             var absolutePath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDcim).AbsolutePath;
-            var folderPath = absolutePath + "/Camera";
+            string folderPath = absolutePath + "/Camara";
             if (Directory.Exists(folderPath) == false)
             {
                 Directory.CreateDirectory(folderPath);
             }
+            GlobalViewModel.PhotosViewModel.ImageList.Clear();
 
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 2; i++)
             {
 
                 camera.StopPreview();
@@ -226,12 +227,6 @@ namespace BrustShotAndShowApp.Droid
 
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
-
-                    //GlobalViewModel.PhotosViewModel.ImageList.Add(
-                    //    StreamImageSource.FromStream(() =>
-                    //   fileStream
-
-                    //    ));
 
 
                     fileStream.Close();
@@ -250,8 +245,33 @@ namespace BrustShotAndShowApp.Droid
                 camera.StartPreview();
                 Thread.Sleep(100);
             }
+            MainPage page = new MainPage();
+            MessagingCenter.Send<MainPage>(page, "TakePhoto");
 
+        }
 
+        public static bool DeleteDirectory(Java.IO.File path)
+        {
+            if (path.Exists())
+            {
+                Java.IO.File[] files = path.ListFiles();
+                if (files == null)
+                {
+                    return true;
+                }
+                for (int i = 0; i < files.Length; i++)
+                {
+                    if (files[i].IsDirectory)
+                    {
+                        DeleteDirectory(files[i]);
+                    }
+                    else
+                    {
+                        files[i].Delete();
+                    }
+                }
+            }
+            return (path.Delete());
         }
 
     }
