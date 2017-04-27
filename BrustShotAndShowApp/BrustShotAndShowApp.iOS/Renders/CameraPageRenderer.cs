@@ -1,5 +1,5 @@
 ﻿using AVFoundation;
-using BrustShotAndShowApp.iOS;
+using BrustShotAndShowApp.iOS.Renders;
 using BrustShotAndShowApp.Renders;
 using CoreGraphics;
 using Foundation;
@@ -13,7 +13,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: ExportRenderer(typeof(CameraPage), typeof(CameraPageRenderer))]
-namespace BrustShotAndShowApp.iOS
+namespace BrustShotAndShowApp.iOS.Renders
 {
     public class CameraPageRenderer : PageRenderer
     {
