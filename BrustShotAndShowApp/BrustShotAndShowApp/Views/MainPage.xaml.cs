@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using PCLStorage;
 
 namespace BrustShotAndShowApp.Views
 {
@@ -85,8 +86,28 @@ namespace BrustShotAndShowApp.Views
             }
             else if (Device.RuntimePlatform == Device.Android)
             {
-                image1.Source = ImageSource.FromFile(DependencyService.Get<IGetFile>().GetFile("0"));
+                string fileName = "0.jpg";
+                GetImage(fileName);
             }
+        }
+
+        private async void GetImage(string fileName)
+        {
+            #region PCL Storage
+
+            IFolder rootFolder = FileSystem.Current.LocalStorage;
+            var isFolderExist = await rootFolder.CheckExistsAsync("Camera");
+            if (isFolderExist == ExistenceCheckResult.FolderExists)
+            {
+                IFolder folder = await rootFolder.GetFolderAsync("Camera");
+                var isFileExist = await folder.CheckExistsAsync(fileName);
+                if (isFileExist == ExistenceCheckResult.FileExists)
+                {
+                    IFile file = await folder.GetFileAsync(fileName);
+                    image1.Source = file.Path;
+                }
+            }
+            #endregion
         }
 
     }

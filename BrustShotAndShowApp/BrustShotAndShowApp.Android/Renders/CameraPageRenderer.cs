@@ -18,6 +18,7 @@ using Android.Graphics;
 using Android.Hardware;
 using Xamarin.Forms.Platform.Android;
 using BrustShotAndShowApp.Views;
+using PCLStorage;
 
 [assembly: ExportRenderer(typeof(CameraPage), typeof(CameraPageRenderer))]
 namespace BrustShotAndShowApp.Droid.Renders
@@ -213,8 +214,11 @@ namespace BrustShotAndShowApp.Droid.Renders
             {
                 Directory.CreateDirectory(folderPath);
             }
-            GlobalViewModel.PhotosViewModel.ImageList.Clear();
-
+            #region PCL Storage
+            IFolder rootFolder = FileSystem.Current.LocalStorage;
+            IFolder folder = await rootFolder.CreateFolderAsync("Camera", CreationCollisionOption.OpenIfExists);
+            #endregion
+            
             for (int i = 0; i < 2; i++)
             {
 
@@ -224,10 +228,20 @@ namespace BrustShotAndShowApp.Droid.Renders
                 {
 
                     var filePath = System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
+                    var fileName = string.Format("{0}.jpg", i);
 
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
 
+                    #region PCL Storage
+                    IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+
+                    using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
+                    {
+                        fileStream.CopyTo(PCLFilestream);
+
+                    }
+                    #endregion
 
                     fileStream.Close();
                     image.Recycle();
