@@ -56,7 +56,8 @@ namespace BrustShotAndShowApp.Views
                 int index = Convert.ToInt32(PhotoSlider.Value);
                 if (index > -1)
                 {
-                    image1.Source = ImageSource.FromFile(DependencyService.Get<IGetFile>().GetFile(index.ToString()));
+                    string fileName = string.Format("{0}.jpg", index);
+                    GetImage(fileName);
                 }
             }
         }
