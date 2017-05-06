@@ -219,7 +219,7 @@ namespace BrustShotAndShowApp.Droid.Renders
             IFolder folder = await rootFolder.CreateFolderAsync("Camera", CreationCollisionOption.OpenIfExists);
             #endregion
             
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 4; i++)
             {
 
                 camera.StopPreview();
@@ -232,14 +232,14 @@ namespace BrustShotAndShowApp.Droid.Renders
 
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
-
+                    System.Diagnostics.Debug.WriteLine("fileStream Length: " + fileStream.Length);
                     #region PCL Storage
                     IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
 
                     using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                     {
                         fileStream.CopyTo(PCLFilestream);
-
+                        System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + PCLFilestream.Length);
                     }
                     #endregion
 
