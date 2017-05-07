@@ -234,7 +234,13 @@ namespace BrustShotAndShowApp.Droid.Renders
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
                     System.Diagnostics.Debug.WriteLine("fileStream Length: " + fileStream.Length);
                     #region PCL Storage
+
+
+                    #region Check File Exist
                     IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                    var isFileExist = await folder.CheckExistsAsync(fileName);
+                    System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", fileName, isFileExist == ExistenceCheckResult.FileExists); 
+                    #endregion
 
                     using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                     {
