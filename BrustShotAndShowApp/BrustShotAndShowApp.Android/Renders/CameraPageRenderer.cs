@@ -233,24 +233,29 @@ namespace BrustShotAndShowApp.Droid.Renders
                     var fileStream = new FileStream(filePath, FileMode.Create);
                     await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
                     System.Diagnostics.Debug.WriteLine("fileStream Length: " + fileStream.Length);
+
                     #region PCL Storage
 
-
                     #region Check File Exist
-                    IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-                    var isFileExist = await folder.CheckExistsAsync(fileName);
-                    System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", fileName, isFileExist == ExistenceCheckResult.FileExists); 
+                    var isFileExist = await folder.CheckExistsAsync(filePath);
+                    System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
+                    if (isFileExist != ExistenceCheckResult.FileExists) break;
                     #endregion
+
+                    IFile PCLFile = await folder.CreateFileAsync(filePath, CreationCollisionOption.ReplaceExisting);
 
                     using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                     {
-                        fileStream.CopyTo(PCLFilestream);
+                        //fileStream.CopyTo(PCLFilestream);
                         System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + PCLFilestream.Length);
                     }
+
                     #endregion
 
                     fileStream.Close();
                     image.Recycle();
+
+                    
 
                     var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
                     var file = new Java.IO.File(filePath);
