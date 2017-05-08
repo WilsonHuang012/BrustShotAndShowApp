@@ -246,7 +246,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
                     using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                     {
-                        //fileStream.CopyTo(PCLFilestream);
+                        fileStream.CopyTo(PCLFilestream);
                         System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + PCLFilestream.Length);
                     }
 
