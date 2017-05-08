@@ -238,15 +238,15 @@ namespace BrustShotAndShowApp.Droid.Renders
 					//各平台壓縮方式參考
 					//  https://github.com/xamarin/xamarin-forms-samples/blob/master/XamFormsImageResize/XamFormsImageResize/ImageResizer.cs
 					var newImageBytes = ResizeImageAndroid(originalImageBytes,
-													originalImageBitmap.Width,
-													originalImageBitmap.Height);
+													originalImageBitmap.Width / 2,
+													originalImageBitmap.Height / 2);
 
 					File.WriteAllBytes($"/data/user/0/BrustShotAndShowApp.Android/files/Camera/{i}_compress.jpg", newImageBytes);
 					//using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
 					//{
 					//	await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
 					//	System.Diagnostics.Debug.WriteLine("Before fileStream Length: " + fileStream.Length);
-
+                     
 					//	#region PCL Storage
 
 					//	#region Check File Exist
@@ -289,16 +289,7 @@ namespace BrustShotAndShowApp.Droid.Renders
         /// </summary>
         /// <param name="input">
         /// <param name="output">
-        public static void CopyStream(Stream input, Stream output)
-        {
-            byte[] buffer = new byte[32768];
-            int read;
-            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                output.Write(buffer, 0, read);
-            }
-        }
-
+       
         public static bool DeleteDirectory(Java.IO.File path)
         {
             if (path.Exists())
@@ -332,7 +323,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 100, ms);
+				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 50, ms);
 				return ms.ToArray ();
 			}
 		}
