@@ -242,7 +242,7 @@ namespace BrustShotAndShowApp.Droid.Renders
                     if (isFileExist != ExistenceCheckResult.FileExists) break;
                     #endregion
 
-                    IFile PCLFile = await folder.CreateFileAsync(filePath, CreationCollisionOption.ReplaceExisting);
+                    IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
 
                     using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
                     {
@@ -273,6 +273,21 @@ namespace BrustShotAndShowApp.Droid.Renders
             MainPage page = new MainPage();
             MessagingCenter.Send<MainPage>(page, "TakePhoto");
 
+        }
+
+        /// <summary>
+        /// Copy Stream
+        /// </summary>
+        /// <param name="input">
+        /// <param name="output">
+        public static void CopyStream(Stream input, Stream output)
+        {
+            byte[] buffer = new byte[32768];
+            int read;
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                output.Write(buffer, 0, read);
+            }
         }
 
         public static bool DeleteDirectory(Java.IO.File path)
