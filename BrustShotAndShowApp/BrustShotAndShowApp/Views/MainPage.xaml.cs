@@ -88,7 +88,8 @@ namespace BrustShotAndShowApp.Views
             else if (Device.RuntimePlatform == Device.Android)
             {
                 string fileName = "0_compress.jpg";
-                GetImage(fileName);
+				//GetImage(fileName);
+				image1.Source = "/data/user/0/BrustShotAndShowApp.Android/files/Camera/0_compress.jpg";
             }
         }
 
