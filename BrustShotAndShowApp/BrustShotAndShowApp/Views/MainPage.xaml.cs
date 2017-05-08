@@ -56,7 +56,7 @@ namespace BrustShotAndShowApp.Views
                 int index = Convert.ToInt32(PhotoSlider.Value);
                 if (index > -1)
                 {
-                    string fileName = string.Format("{0}.jpg", index);
+                    string fileName = string.Format("{0}_compress.jpg", index);
                     GetImage(fileName);
                 }
             }
@@ -87,7 +87,7 @@ namespace BrustShotAndShowApp.Views
             }
             else if (Device.RuntimePlatform == Device.Android)
             {
-                string fileName = "0.jpg";
+                string fileName = "0_compress.jpg";
                 GetImage(fileName);
             }
         }
@@ -105,7 +105,8 @@ namespace BrustShotAndShowApp.Views
                 if (isFileExist == ExistenceCheckResult.FileExists)
                 {
                     IFile file = await folder.GetFileAsync(fileName);
-                    image1.Source = file.Path;
+                    if (image1.Source?.ToString() != file.Path)
+                        image1.Source = file.Path;
                 }
             }
             #endregion

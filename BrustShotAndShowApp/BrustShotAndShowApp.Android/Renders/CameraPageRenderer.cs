@@ -229,39 +229,37 @@ namespace BrustShotAndShowApp.Droid.Renders
 
                     var filePath = System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
                     var fileName = string.Format("{0}.jpg", i);
+                    var outputFilePath = string.Format("{0}_compress.jpg", i);
 
-                    var fileStream = new FileStream(filePath, FileMode.Create);
-                    await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
-                    System.Diagnostics.Debug.WriteLine("fileStream Length: " + fileStream.Length);
+					using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
+					{
+						await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
+						System.Diagnostics.Debug.WriteLine("Before fileStream Length: " + fileStream.Length);
 
-                    #region PCL Storage
+						#region PCL Storage
 
-                    #region Check File Exist
-                    var isFileExist = await folder.CheckExistsAsync(filePath);
-                    System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
-                    if (isFileExist != ExistenceCheckResult.FileExists) break;
-                    #endregion
+						#region Check File Exist
+						var isFileExist = await folder.CheckExistsAsync(filePath);
+						System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
+						if (isFileExist != ExistenceCheckResult.FileExists) break;
+						#endregion
 
-                    IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
-
-                    using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
-                    {
-                        fileStream.CopyTo(PCLFilestream);
-                        System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + PCLFilestream.Length);
-                    }
-
-                    #endregion
-
-                    fileStream.Close();
-                    image.Recycle();
-
-                    
-
-                    var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
-                    var file = new Java.IO.File(filePath);
-                    var uri = Android.Net.Uri.FromFile(file);
-                    intent.SetData(uri);
-                    Forms.Context.SendBroadcast(intent);
+						IFile PCLFile = await folder.CreateFileAsync(outputFilePath, CreationCollisionOption.ReplaceExisting);
+						var outputStream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite);
+						fileStream.CopyTo(outputStream);
+                        System.Diagnostics.Debug.WriteLine("After fileStream Length: " + fileStream.Length);
+                        System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + outputStream.Length);
+						
+						#endregion
+						image.Recycle();
+						
+						
+						var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
+	                    var file = new Java.IO.File(PCLFile.Path);
+	                    var uri = Android.Net.Uri.FromFile(file);
+	                    intent.SetData(uri);
+	                    Forms.Context.SendBroadcast(intent);
+					}
                 }
                 catch (Exception ex)
                 {
