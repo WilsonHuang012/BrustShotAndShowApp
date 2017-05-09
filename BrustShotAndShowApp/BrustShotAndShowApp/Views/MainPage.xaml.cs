@@ -57,7 +57,8 @@ namespace BrustShotAndShowApp.Views
                 if (index > -1)
                 {
                     string fileName = string.Format("{0}_compress.jpg", index);
-                    GetImage(fileName);
+                    
+                    image1.Source = "/data/user/0/BrustShotAndShowApp.Android/files/Camera/" + fileName;
                 }
             }
         }
@@ -87,7 +88,6 @@ namespace BrustShotAndShowApp.Views
             }
             else if (Device.RuntimePlatform == Device.Android)
             {
-                string fileName = "0_compress.jpg";
 				//GetImage(fileName);
 				image1.Source = "/data/user/0/BrustShotAndShowApp.Android/files/Camera/0_compress.jpg";
             }
@@ -106,8 +106,7 @@ namespace BrustShotAndShowApp.Views
                 if (isFileExist == ExistenceCheckResult.FileExists)
                 {
                     IFile file = await folder.GetFileAsync(fileName);
-                    if (image1.Source?.ToString() != file.Path)
-                        image1.Source = file.Path;
+                   
                 }
             }
             #endregion
