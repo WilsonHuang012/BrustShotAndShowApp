@@ -27,7 +27,7 @@ namespace BrustShotAndShowApp.Views
                     PhotoSlider.Maximum = 29;
                     break;
                 case Device.Android:
-                    PhotoSlider.Maximum = 3;
+                    PhotoSlider.Maximum = 30;
                     break;
             }
 

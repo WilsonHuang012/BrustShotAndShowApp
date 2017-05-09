@@ -219,7 +219,7 @@ namespace BrustShotAndShowApp.Droid.Renders
             IFolder folder = await rootFolder.CreateFolderAsync("Camera", CreationCollisionOption.OpenIfExists);
             #endregion
             
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 30; i++)
             {
 
                 camera.StopPreview();
