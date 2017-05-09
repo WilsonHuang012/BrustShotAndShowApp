@@ -209,7 +209,7 @@ namespace BrustShotAndShowApp.Droid.Renders
         async void TakePhotoButtonTapped(object sender, EventArgs e)
         {
             var absolutePath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDcim).AbsolutePath;
-            string folderPath = absolutePath + "/Camara";
+            string folderPath = absolutePath + "/Camera";
             if (Directory.Exists(folderPath) == false)
             {
                 Directory.CreateDirectory(folderPath);
@@ -219,7 +219,7 @@ namespace BrustShotAndShowApp.Droid.Renders
             IFolder folder = await rootFolder.CreateFolderAsync("Camera", CreationCollisionOption.OpenIfExists);
             #endregion
             
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 30; i++)
             {
 
                 camera.StopPreview();
@@ -238,8 +238,8 @@ namespace BrustShotAndShowApp.Droid.Renders
 					//各平台壓縮方式參考
 					//  https://github.com/xamarin/xamarin-forms-samples/blob/master/XamFormsImageResize/XamFormsImageResize/ImageResizer.cs
 					var newImageBytes = ResizeImageAndroid(originalImageBytes,
-													originalImageBitmap.Width,
-													originalImageBitmap.Height);
+													originalImageBitmap.Width / 2,
+													originalImageBitmap.Height / 2);
 
 					File.WriteAllBytes($"/data/user/0/BrustShotAndShowApp.Android/files/Camera/{i}_compress.jpg", newImageBytes);
 					//using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
@@ -332,7 +332,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 100, ms);
+				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 0, ms);
 				return ms.ToArray ();
 			}
 		}
