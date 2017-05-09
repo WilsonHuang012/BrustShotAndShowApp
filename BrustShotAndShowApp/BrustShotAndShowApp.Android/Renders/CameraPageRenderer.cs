@@ -323,7 +323,8 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 50, ms);
+                //第2個參數為壓縮率: 0 為壓縮率 100%，100 為壓縮率 0%
+				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 0, ms);
 				return ms.ToArray ();
 			}
 		}
