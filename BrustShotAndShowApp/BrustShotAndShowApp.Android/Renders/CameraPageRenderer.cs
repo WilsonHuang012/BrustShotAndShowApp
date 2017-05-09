@@ -209,39 +209,36 @@ namespace BrustShotAndShowApp.Droid.Renders
         async void TakePhotoButtonTapped(object sender, EventArgs e)
         {
             var absolutePath = Android.OS.Environment.GetExternalStoragePublicDirectory(Android.OS.Environment.DirectoryDcim).AbsolutePath;
-            string folderPath = absolutePath + "/Camera";
+            string folderPath = System.IO.Path.Combine(absolutePath, "Camera");
+			Console.WriteLine($"folderPath = {folderPath}");
             if (Directory.Exists(folderPath) == false)
             {
                 Directory.CreateDirectory(folderPath);
             }
-            #region PCL Storage
-            IFolder rootFolder = FileSystem.Current.LocalStorage;
-            IFolder folder = await rootFolder.CreateFolderAsync("Camera", CreationCollisionOption.OpenIfExists);
-            #endregion
             
             for (int i = 0; i < 30; i++)
             {
 
                 camera.StopPreview();
-                var image = textureView.Bitmap;
+                var originalImageBitmap = textureView.Bitmap;
                 try
                 {
-
-                    var filePath = System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
-                    //var fileName = string.Format("{0}.jpg", i);
-                    var outputFilePath = string.Format("{0}_compress.jpg", i);
-
-
-					var originalImageBitmap = BitmapFactory.DecodeFile(filePath);
-					var originalImageBytes = File.ReadAllBytes(filePath);
-					
+                	var originalImageFullPath = 
+						System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
+	                using (var originalImageStream = new FileStream(originalImageFullPath, FileMode.OpenOrCreate))
+				    {
+				        originalImageBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, originalImageStream);
+				    }
+				    var originalImageBytes = File.ReadAllBytes(originalImageFullPath);
+				    
+                    var outputFilePath = System.IO.Path.Combine(folderPath, $"{i}_compress.jpg");
 					//各平台壓縮方式參考
 					//  https://github.com/xamarin/xamarin-forms-samples/blob/master/XamFormsImageResize/XamFormsImageResize/ImageResizer.cs
 					var newImageBytes = ResizeImageAndroid(originalImageBytes,
 													originalImageBitmap.Width / 2,
 													originalImageBitmap.Height / 2);
 
-					File.WriteAllBytes($"/data/user/0/BrustShotAndShowApp.Android/files/Camera/{i}_compress.jpg", newImageBytes);
+					File.WriteAllBytes(outputFilePath, newImageBytes);
 					//using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
 					//{
 					//	await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
@@ -332,7 +329,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 0, ms);
+				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 100, ms);
 				return ms.ToArray ();
 			}
 		}
