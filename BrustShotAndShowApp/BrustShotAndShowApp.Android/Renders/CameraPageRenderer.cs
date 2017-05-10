@@ -19,6 +19,7 @@ using Android.Hardware;
 using Xamarin.Forms.Platform.Android;
 using BrustShotAndShowApp.Views;
 using PCLStorage;
+using System.Threading.Tasks;
 
 [assembly: ExportRenderer(typeof(CameraPage), typeof(CameraPageRenderer))]
 namespace BrustShotAndShowApp.Droid.Renders
@@ -228,47 +229,19 @@ namespace BrustShotAndShowApp.Droid.Renders
 						System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
 	                using (var originalImageStream = new FileStream(originalImageFullPath, FileMode.OpenOrCreate))
 				    {
-				        originalImageBitmap.Compress(Bitmap.CompressFormat.Jpeg, 50, originalImageStream);
+				        await originalImageBitmap.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, originalImageStream);
 				    }
 				    var originalImageBytes = File.ReadAllBytes(originalImageFullPath);
 				    
                     var outputFilePath = System.IO.Path.Combine(folderPath, $"{i}_compress.jpg");
 					//各平台壓縮方式參考
 					//  https://github.com/xamarin/xamarin-forms-samples/blob/master/XamFormsImageResize/XamFormsImageResize/ImageResizer.cs
-					var newImageBytes = ResizeImageAndroid(originalImageBytes,
+					var newImageBytes = await ResizeImageAndroid(originalImageBytes,
 													originalImageBitmap.Width / 2,
 													originalImageBitmap.Height / 2);
 
 					File.WriteAllBytes(outputFilePath, newImageBytes);
-                    //using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
-                    //{
-                    //	await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
-                    //	System.Diagnostics.Debug.WriteLine("Before fileStream Length: " + fileStream.Length);
-
-                    //	#region PCL Storage
-
-                    //	#region Check File Exist
-                    //	var isFileExist = await folder.CheckExistsAsync(filePath);
-                    //	System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
-                    //	if (isFileExist != ExistenceCheckResult.FileExists) break;
-                    //	#endregion
-
-                    //	IFile PCLFile = await folder.CreateFileAsync(outputFilePath, CreationCollisionOption.ReplaceExisting);
-                    //	var outputStream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite);
-                    //	fileStream.CopyTo(outputStream);
-                    //                   System.Diagnostics.Debug.WriteLine("After fileStream Length: " + fileStream.Length);
-                    //                   System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + outputStream.Length);  
-
-                    //	#endregion
-                    //image.Recycle();
-
-
-                    //var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
-                    //var file = new Java.IO.File(outputFilePath);
-                    //var uri = Android.Net.Uri.FromFile(file);
-                    //intent.SetData(uri);
-                    //Forms.Context.SendBroadcast(intent);
-                    //}
+                    
                 }
                 catch (Exception ex)
                 {
@@ -297,7 +270,7 @@ namespace BrustShotAndShowApp.Droid.Renders
             }
         }        
         
-        public static byte[] ResizeImageAndroid (byte[] imageData, float width, float height)
+        public async Task<byte[]> ResizeImageAndroid (byte[] imageData, float width, float height)
 		{
 			// Load the bitmap
 			Bitmap originalImage = BitmapFactory.DecodeByteArray (imageData, 0, imageData.Length);
@@ -305,7 +278,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 50, ms);
+				await resizedImage.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, ms);
 				return ms.ToArray ();
 			}
 		}
