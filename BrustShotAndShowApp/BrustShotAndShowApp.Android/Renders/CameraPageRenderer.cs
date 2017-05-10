@@ -216,9 +216,10 @@ namespace BrustShotAndShowApp.Droid.Renders
                 Directory.CreateDirectory(folderPath);
             }
             
+            
             for (int i = 0; i < 30; i++)
             {
-
+                
                 camera.StopPreview();
                 var originalImageBitmap = textureView.Bitmap;
                 try
@@ -227,7 +228,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 						System.IO.Path.Combine(folderPath, string.Format("{0}.jpg", i));
 	                using (var originalImageStream = new FileStream(originalImageFullPath, FileMode.OpenOrCreate))
 				    {
-				        originalImageBitmap.Compress(Bitmap.CompressFormat.Jpeg, 100, originalImageStream);
+				        originalImageBitmap.Compress(Bitmap.CompressFormat.Jpeg, 50, originalImageStream);
 				    }
 				    var originalImageBytes = File.ReadAllBytes(originalImageFullPath);
 				    
@@ -239,35 +240,35 @@ namespace BrustShotAndShowApp.Droid.Renders
 													originalImageBitmap.Height / 2);
 
 					File.WriteAllBytes(outputFilePath, newImageBytes);
-					//using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
-					//{
-					//	await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
-					//	System.Diagnostics.Debug.WriteLine("Before fileStream Length: " + fileStream.Length);
+                    //using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate))
+                    //{
+                    //	await image.CompressAsync(Bitmap.CompressFormat.Jpeg, 50, fileStream);
+                    //	System.Diagnostics.Debug.WriteLine("Before fileStream Length: " + fileStream.Length);
 
-					//	#region PCL Storage
+                    //	#region PCL Storage
 
-					//	#region Check File Exist
-					//	var isFileExist = await folder.CheckExistsAsync(filePath);
-					//	System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
-					//	if (isFileExist != ExistenceCheckResult.FileExists) break;
-					//	#endregion
+                    //	#region Check File Exist
+                    //	var isFileExist = await folder.CheckExistsAsync(filePath);
+                    //	System.Diagnostics.Debug.WriteLine("{0} Exist: {1}", filePath, isFileExist == ExistenceCheckResult.FileExists);
+                    //	if (isFileExist != ExistenceCheckResult.FileExists) break;
+                    //	#endregion
 
-					//	IFile PCLFile = await folder.CreateFileAsync(outputFilePath, CreationCollisionOption.ReplaceExisting);
-					//	var outputStream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite);
-					//	fileStream.CopyTo(outputStream);
-     //                   System.Diagnostics.Debug.WriteLine("After fileStream Length: " + fileStream.Length);
-     //                   System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + outputStream.Length);
-						
-					//	#endregion
-					//	image.Recycle();
-						
-						
-					//	var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
-	    //                var file = new Java.IO.File(PCLFile.Path);
-	    //                var uri = Android.Net.Uri.FromFile(file);
-	    //                intent.SetData(uri);
-	    //                Forms.Context.SendBroadcast(intent);
-					//}
+                    //	IFile PCLFile = await folder.CreateFileAsync(outputFilePath, CreationCollisionOption.ReplaceExisting);
+                    //	var outputStream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite);
+                    //	fileStream.CopyTo(outputStream);
+                    //                   System.Diagnostics.Debug.WriteLine("After fileStream Length: " + fileStream.Length);
+                    //                   System.Diagnostics.Debug.WriteLine("PCLFilestream Length: " + outputStream.Length);  
+
+                    //	#endregion
+                    //image.Recycle();
+
+
+                    var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
+                    var file = new Java.IO.File(outputFilePath);
+                    var uri = Android.Net.Uri.FromFile(file);
+                    intent.SetData(uri);
+                    Forms.Context.SendBroadcast(intent);
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -294,32 +295,7 @@ namespace BrustShotAndShowApp.Droid.Renders
             {
                 output.Write(buffer, 0, read);
             }
-        }
-
-        public static bool DeleteDirectory(Java.IO.File path)
-        {
-            if (path.Exists())
-            {
-                Java.IO.File[] files = path.ListFiles();
-                if (files == null)
-                {
-                    return true;
-                }
-                for (int i = 0; i < files.Length; i++)
-                {
-                    if (files[i].IsDirectory)
-                    {
-                        DeleteDirectory(files[i]);
-                    }
-                    else
-                    {
-                        files[i].Delete();
-                    }
-                }
-            }
-            return (path.Delete());
-        }
-        
+        }        
         
         public static byte[] ResizeImageAndroid (byte[] imageData, float width, float height)
 		{
@@ -329,7 +305,7 @@ namespace BrustShotAndShowApp.Droid.Renders
 
 			using (MemoryStream ms = new MemoryStream())
 			{
-				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 100, ms);
+				resizedImage.Compress (Bitmap.CompressFormat.Jpeg, 50, ms);
 				return ms.ToArray ();
 			}
 		}

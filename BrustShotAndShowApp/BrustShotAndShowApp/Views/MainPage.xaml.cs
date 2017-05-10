@@ -36,6 +36,8 @@ namespace BrustShotAndShowApp.Views
             StepValue = 1.0;
         }
 
+        int oldValue = -1;
+
         private void PhotoSlider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             var newStep = Math.Round(e.NewValue / StepValue);
@@ -56,9 +58,14 @@ namespace BrustShotAndShowApp.Views
                 int index = Convert.ToInt32(PhotoSlider.Value);
                 if (index > -1)
                 {
-                    string fileName = string.Format("{0}_compress.jpg", index);
-                    
-                    image1.Source = "/data/user/0/BrustShotAndShowApp.Android/files/Camera/" + fileName;
+                    if (index != oldValue)
+                    {
+                        string fileName = string.Format("{0}_compress.jpg", index);
+                        image1.Source = System.IO.Path.Combine(folderPath, fileName);
+                        //image1.Source = "/storage/sdcard0/DCIM/Camera/" + fileName;
+                        NumberLabel.Text = index.ToString();
+                        oldValue = index;
+                    }
                 }
             }
         }
@@ -77,6 +84,8 @@ namespace BrustShotAndShowApp.Views
             MessagingCenter.Unsubscribe<MainPage>(this, "TakePhoto");
         }
 
+        string folderPath = string.Empty;
+
         protected override void OnAppearing()
         {
             if (Device.RuntimePlatform == Device.iOS)
@@ -88,29 +97,24 @@ namespace BrustShotAndShowApp.Views
             }
             else if (Device.RuntimePlatform == Device.Android)
             {
-				//GetImage(fileName);
-				image1.Source = "/storage/emulated/0/DCIM/Camera/0_compress.jpg";
+                folderPath = DependencyService.Get<IGetPath>().GetPath();
+                image1.Source = System.IO.Path.Combine(folderPath, "15_compress.jpg");
             }
         }
 
-        private async void GetImage(string fileName)
+        
+        private static int testindex = 0;
+        private void PlayImage_Clicked(object sender, EventArgs e)
         {
-            #region PCL Storage
-
-            IFolder rootFolder = FileSystem.Current.LocalStorage;
-            var isFolderExist = await rootFolder.CheckExistsAsync("Camera");
-            if (isFolderExist == ExistenceCheckResult.FolderExists)
-            {
-                IFolder folder = await rootFolder.GetFolderAsync("Camera");
-                var isFileExist = await folder.CheckExistsAsync(fileName);
-                if (isFileExist == ExistenceCheckResult.FileExists)
-                {
-                    IFile file = await folder.GetFileAsync(fileName);
-                   
-                }
-            }
-            #endregion
+            if (testindex >= 30)
+                testindex = 0;
+            else
+                testindex++;
+            NumberLabel.Text = testindex.ToString();
+            string fileName = string.Format("{0}.jpg",testindex);
+            image1.Source = System.IO.Path.Combine(folderPath, fileName);
+            // image1.Source = ImageSource.FromFile("/storage/sdcard0/DCIM/Camera/" + fileName);
+            
         }
-
     }
 }

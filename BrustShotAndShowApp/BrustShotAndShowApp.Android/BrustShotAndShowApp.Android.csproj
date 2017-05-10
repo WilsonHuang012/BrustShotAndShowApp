@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyServices\GetFileService.cs" />
+    <Compile Include="DependencyServices\GetPathService.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Renders\CameraPageRenderer.cs" />

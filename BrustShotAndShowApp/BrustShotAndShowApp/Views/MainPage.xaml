@@ -48,7 +48,7 @@
                              Constant=-45}">
 
             </Label>
-
+            <Button Text="PlayImage" x:Name="PlayImage" Clicked="PlayImage_Clicked"></Button>
         </RelativeLayout>
     </ContentPage.Content>
 </ContentPage>
