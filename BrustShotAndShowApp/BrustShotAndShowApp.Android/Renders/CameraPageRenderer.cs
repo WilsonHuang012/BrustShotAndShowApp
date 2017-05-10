@@ -263,11 +263,11 @@ namespace BrustShotAndShowApp.Droid.Renders
                     //image.Recycle();
 
 
-                    var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
-                    var file = new Java.IO.File(outputFilePath);
-                    var uri = Android.Net.Uri.FromFile(file);
-                    intent.SetData(uri);
-                    Forms.Context.SendBroadcast(intent);
+                    //var intent = new Android.Content.Intent(Android.Content.Intent.ActionMediaScannerScanFile);
+                    //var file = new Java.IO.File(outputFilePath);
+                    //var uri = Android.Net.Uri.FromFile(file);
+                    //intent.SetData(uri);
+                    //Forms.Context.SendBroadcast(intent);
                     //}
                 }
                 catch (Exception ex)

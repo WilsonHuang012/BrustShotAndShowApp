@@ -106,11 +106,12 @@ namespace BrustShotAndShowApp.Views
         private static int testindex = 0;
         private void PlayImage_Clicked(object sender, EventArgs e)
         {
-            if (testindex >= 30)
+            if (testindex >= 29)
                 testindex = 0;
             else
                 testindex++;
             NumberLabel.Text = testindex.ToString();
+            PhotoSlider.Value = testindex;
             string fileName = string.Format("{0}.jpg",testindex);
             image1.Source = System.IO.Path.Combine(folderPath, fileName);
             // image1.Source = ImageSource.FromFile("/storage/sdcard0/DCIM/Camera/" + fileName);
