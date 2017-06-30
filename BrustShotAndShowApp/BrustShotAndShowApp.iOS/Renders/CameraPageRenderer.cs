@@ -3,6 +3,7 @@ using BrustShotAndShowApp.iOS.Renders;
 using BrustShotAndShowApp.Renders;
 using CoreGraphics;
 using Foundation;
+using PCLStorage;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -91,9 +92,21 @@ namespace BrustShotAndShowApp.iOS.Renders
             GlobalViewModel.PhotosViewModel.ImageList.Clear();
             takePhotoButton.TouchUpInside += async (object sender, EventArgs e) =>
             {
-                for (int i = 0; i < 30; i++)
+                string folderName = "Photos";
+                IFolder rootFolder = FileSystem.Current.LocalStorage;
+                var isFolderExist = await rootFolder.CheckExistsAsync(folderName);
+                if (isFolderExist == ExistenceCheckResult.FolderExists)
                 {
-                    await CapturePhoto();
+                    IFolder existFolder = await rootFolder.GetFolderAsync(folderName);
+                    await existFolder.DeleteAsync();
+                }
+
+                await rootFolder.CreateFolderAsync(folderName, CreationCollisionOption.ReplaceExisting);
+
+                IFolder folder = await rootFolder.GetFolderAsync(folderName);
+                for (int i = 0; i < 15; i++)
+                {
+                    await CapturePhoto(folder, i);
                     Thread.Sleep(100);
                 }
                 NavigationController.PopViewController(true);
@@ -109,18 +122,26 @@ namespace BrustShotAndShowApp.iOS.Renders
         }
 
 
-        async Task CapturePhoto()
+        async Task CapturePhoto(IFolder folder, int i)
         {
+            string fileName = i + ".jpg";
             var videoConnection = stillImageOutput.ConnectionFromMediaType(AVMediaType.Video);
             var sampleBuffer = await stillImageOutput.CaptureStillImageTaskAsync(videoConnection);
             var jpegImage = AVCaptureStillImageOutput.JpegStillToNSData(sampleBuffer);
 
             var photo = new UIImage(jpegImage);
-            GlobalViewModel.PhotosViewModel.ImageList.Add(
-                StreamImageSource.FromStream(() =>
-                photo.AsJPEG().AsStream()
+            var fileStream = photo.AsJPEG(0.5f).AsStream();
+            IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
 
-                ));
+            using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
+            {
+                fileStream.CopyTo(PCLFilestream);
+            }
+            //GlobalViewModel.PhotosViewModel.ImageList.Add(
+            //    StreamImageSource.FromStream(() =>
+            //    photo.AsJPEG().AsStream()
+
+            //    ));
             //photo.SaveToPhotosAlbum((image, error) =>
             //{
             //if (error != null)
@@ -129,7 +150,6 @@ namespace BrustShotAndShowApp.iOS.Renders
             //    }
 
             //});
-
         }
 
         void ToggleFrontBackCamera()

@@ -216,13 +216,26 @@ namespace BrustShotAndShowApp.Droid.Renders
             {
                 Directory.CreateDirectory(folderPath);
             }
+            //資料夾名稱
+            string folderName = "Photos";
+
+            #region PCL Storage
+            IFolder rootFolder = FileSystem.Current.LocalStorage;
+            var isFolderExist = await rootFolder.CheckExistsAsync(folderName);
+            if (isFolderExist == ExistenceCheckResult.FolderExists)
+            {
+                IFolder existFolder = await rootFolder.GetFolderAsync(folderName);
+                await existFolder.DeleteAsync();
+            }
+            IFolder folder = await rootFolder.CreateFolderAsync(folderName, CreationCollisionOption.OpenIfExists);
+            #endregion
             
-            
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 15; i++)
             {
                 
                 camera.StopPreview();
                 var originalImageBitmap = textureView.Bitmap;
+                string fileName = string.Format("{0}.jpg", i);
                 try
                 {
                 	var originalImageFullPath = 
@@ -241,7 +254,17 @@ namespace BrustShotAndShowApp.Droid.Renders
 													originalImageBitmap.Height / 2);
 
 					File.WriteAllBytes(outputFilePath, newImageBytes);
-                    
+
+                    #region PCL File
+                    IFile PCLFile = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+                    using (var PCLFilestream = await PCLFile.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
+                    {
+                        //write byte array to stream
+                        await PCLFilestream.WriteAsync(newImageBytes, 0, newImageBytes.Length);
+                        System.Diagnostics.Debug.WriteLine(PCLFilestream.Length);
+                    }
+                    #endregion
+
                 }
                 catch (Exception ex)
                 {
